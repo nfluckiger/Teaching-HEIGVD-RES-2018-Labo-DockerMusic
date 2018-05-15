@@ -23,7 +23,7 @@ var protocol = require('./protocol');
  */
 var dgram = require('dgram');
 
-var moment = require("moment");
+//var moment = require("moment");
 
 /*
  * We use a standard Node.js module to work with TCP
@@ -41,7 +41,10 @@ socketUDP.bind(protocol.PROTOCOL_PORT, function() {
   socketUDP.addMembership(protocol.PROTOCOL_MULTICAST_ADDRESS);
 });
 
+
+// Map the uuid with the musicians objects
 var map = new Map();
+
 var sounds = new Map();
 sounds.set(protocol.PIANO, "piano");
 sounds.set(protocol.TRUMPER, "trumpet");
@@ -54,71 +57,44 @@ sounds.set(protocol.DRUM, "drum");
  */
 socketUDP.on('message', function(msg, source) {
 	var newSound = JSON.parse(msg);
-	var uuid = newSound[0];
 	var newMusician = {
-		uuid: this.uuid,
-		instrument: sounds.get(newSound[1]),
+		uuid: newSound.uuid,
+		instrument: sounds.get(newSound.sound),
 		activeSince: Date.now()
 	};
   
 
-	/*for (var i = 0; i < musicians.length; i++) {
+	for (var i = 0; i < musicians.length; i++) {
 		if (newMusician.uuid == musicians[i].uuid) {
 			musicians[i].activeSince = newMusician.activeSince; // refresh the time remaining
 			return;
 		}
-	}*/
-	if(map.get(uuid) == null){
+	}
+
+	console.log("UUID " + newMusician.uuid);
+	console.log("instrument " + newMusician.instrument);
+	console.log("activeSince " + newMusician.activeSince);
+	if(map.get(newMusician.uuid) == null){
 		musicians.push(newMusician);
 	}
-	map.set(uuid, newMusician);
+	map.set(newMusician.uuid, newMusician);
 	console.log("Data has arrived: " + msg + ". Source port: " + source.port);
 });
 
-
-//function Auditor(sock) {
-
-	/*
-	   * We will simulate temperature changes on a regular basis. That is something that
-	   * we implement in a class method (via the prototype)
-	   */
-	  //Auditor.prototype.update = function () {
-
-		/*
-		  * Let's create the sound emission as a dynamic javascript object, 
-		  * add corresponding sound (timestamp, location and temperature)
-		  * and serialize the object to a JSON string
-		  */
-
-        /*map.forEach()
-		var soundEmission = {
-			uuid: 
-			sound: getSound(this.instrument)
-		};*/
-		//var payload = JSON.stringify(map);
-
-		/*		
-		 * Finally, let's encapsulate the payload in a UDP datagram, which we publish on
-	     * the multicast address. All subscribers to this address will receive the message.
-	     */
-		//message = new Buffer(payload);
-		//sock.send(message, 0, message.length, protocol.PROTOCOL_PORT, protocol.PROTOCOL_MULTICAST_ADDRESS, function (err, bytes) {
-		//	console.log("Sending payload: " + payload + " via port " + s.address().port);
-		//});
-
-	//}
-
-	/*
-	 * Let's take and send a payload every five second
-	 */
-	//
-//}
+function updateMusicians(){
+    var currentTime = Date.now();
+    for(var i = 0;  i < musicians.length; ++i){
+        if(currentTime - musicians[i].activeSince > 5000){
+            musicians.splice(i,1);
+        }
+    }
+}
 /* Will remove musicians not active since delay defined in the protocol*/
-function updateMusicians() {
+function fdfsff() {
 	
     for (var i = 0; i < musicians.length; i++) {
         
-        if (moment().diff(musicians[i].activeSince) > protocol.DELAY) {
+        if (moment().diff(musicians[i].activeSince) > protocol.DELAY_TCP) {
             console.log('Musician removed : ' + JSON.stringify(musicians[i]));
             musicians.splice(i, 1);
         }
@@ -149,11 +125,15 @@ var serverTCP = net.createServer(function(sock) {
         //console.log('DATA ' + sock.remoteAddress + ': ' + data);
         // Write the data back to the socket, the client will receive it as data from the server
 		//sock.write('You said "' + payload + '\"');
-		sock.write("bonjour");
+		//sock.write("bonjour");
 		
 		var msg = JSON.stringify(musicians);
 
+		updateMusicians();
+		//ucheckIfActif();
 		sock.write(msg);
+
+		
 	
 		//sock.end();
         
