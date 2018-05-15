@@ -3,6 +3,7 @@
  */
 
 exports.PROTOCOL_MULTICAST_ADDRESS = "239.255.22.5";
+exports.TCP_ADDRESS = "localhost";
 exports.PROTOCOL_PORT = 2205;
 
 exports.PIANO = "ti-ta-ti";

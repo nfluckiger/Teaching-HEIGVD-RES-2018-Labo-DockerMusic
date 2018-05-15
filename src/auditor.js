@@ -113,39 +113,26 @@ var PORT = 2205;
 // Create a server instance, and chain the listen function to it
 // The function passed to net.createServer() becomes the event handler for the 'connection' event
 // The sock object the callback function receives UNIQUE for each connection
-var serverTCP = net.createServer(function(sock) {
+var serverTCP = net.createServer(function(socketTCP) {
     
     // We have a connection - a socket object is assigned to the connection automatically
-    console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
+    console.log('CONNECTED: ' + socketTCP.remoteAddress +':'+ socketTCP.remotePort);
 
     // Add a 'data' event handler to this instance of socket
-    sock.on('data', function(data) {
-		
-		//var payload = JSON.stringify(map);
-        //console.log('DATA ' + sock.remoteAddress + ': ' + data);
-        // Write the data back to the socket, the client will receive it as data from the server
-		//sock.write('You said "' + payload + '\"');
-		//sock.write("bonjour");
-		
-		var msg = JSON.stringify(musicians);
-
-		updateMusicians();
-		//ucheckIfActif();
-		sock.write(msg);
-
-		
+    socketTCP.on('data', function(data) {
 	
-		//sock.end();
-        
+		updateMusicians();
+		var msg = JSON.stringify(musicians);
+		
+		socketTCP.write(msg);
+		socketTCP.end();
+
 	});
 
-	
-	
-	//setInterval(this.on.bind(this), 5000);
     
     // Add a 'close' event handler to this instance of socket
-    sock.on('close', function(data) {
-        console.log('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort);
+    socketTCP.on('close', function(data) {
+        console.log('CLOSED: ' + socketTCP.remoteAddress +' '+ socketTCP.remotePort);
     });
     
 }).listen(PORT, HOST);
