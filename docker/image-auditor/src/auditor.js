@@ -60,7 +60,7 @@ socketUDP.on('message', function(msg, source) {
 	var newMusician = {
 		uuid: newSound.uuid,
 		instrument: sounds.get(newSound.sound),
-		activeSince: Date.now()
+		activeSince: moment();
 	};
   
 
