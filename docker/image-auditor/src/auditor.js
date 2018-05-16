@@ -119,15 +119,14 @@ var serverTCP = net.createServer(function(socketTCP) {
     console.log('CONNECTED: ' + socketTCP.remoteAddress +':'+ socketTCP.remotePort);
 
     // Add a 'data' event handler to this instance of socket
-    socketTCP.on('data', function(data) {
+   
 	
-		updateMusicians();
-		var msg = JSON.stringify(musicians);
+	updateMusicians();
+	var msg = JSON.stringify(musicians);
 		
-		socketTCP.write(msg);
-		socketTCP.end();
+	socketTCP.write(msg);
+	socketTCP.end();
 
-	});
 
     
     // Add a 'close' event handler to this instance of socket
